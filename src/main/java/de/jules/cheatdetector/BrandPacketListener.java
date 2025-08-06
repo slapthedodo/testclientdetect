@@ -6,7 +6,6 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
@@ -39,39 +38,19 @@ public class BrandPacketListener extends PacketListenerAbstract {
         }
 
         if (channelName.equalsIgnoreCase("minecraft:brand") || channelName.equalsIgnoreCase("MC|Brand")) {
-            String brand = readString(packet.getData());
-            logger.info("Detected brand for player " + player.getName() + ": '" + brand + "'");
-            detectionEngine.checkPlayer(player, brand, profile.getRegisteredChannels());
-        }
-    }
-
-    private String readString(byte[] data) {
-        try {
-            int varIntLength = 0;
-            int bytesRead = 0;
-            int value = 0;
-            byte currentByte;
-
-            do {
-                currentByte = data[bytesRead];
-                value |= (currentByte & 0x7F) << (varIntLength++ * 7);
-                if (varIntLength > 5) {
-                    throw new IOException("VarInt too big");
-                }
-            } while ((currentByte & 0x80) == 0x80 && ++bytesRead < data.length);
-
-            bytesRead++; // Move past the last byte of the VarInt
-
-            int stringLength = value;
-            if (bytesRead + stringLength > data.length) {
-                 // Fallback if the parsing is wrong or packet is malformed
-                return new String(data, StandardCharsets.UTF_8).trim().replaceAll("\\x00", "");
+            String brand = "unknown";
+            try {
+                // Try reading the string directly from the buffer. This is a common Netty pattern.
+                // The buffer's reader index will be advanced automatically.
+                brand = packet.getBuffer().readString();
+            } catch (Exception e) {
+                logger.warning("Could not read brand for player " + player.getName() + " using buffer.readString(). Error: " + e.getMessage());
+                // Fallback to a simple UTF-8 conversion if the buffer read fails.
+                brand = new String(packet.getData(), StandardCharsets.UTF_8).trim();
             }
 
-            return new String(data, bytesRead, stringLength, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            // Fallback for any parsing error
-            return new String(data, StandardCharsets.UTF_8).trim().replaceAll("\\x00", "");
+            logger.info("Detected brand for player " + player.getName() + ": '" + brand + "'");
+            detectionEngine.checkPlayer(player, brand, profile.getRegisteredChannels());
         }
     }
 }

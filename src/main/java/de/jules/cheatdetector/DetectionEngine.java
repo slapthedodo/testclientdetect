@@ -12,6 +12,11 @@ public class DetectionEngine {
     private final PlayerManager playerManager = CheatDetectorPlugin.getInstance().getPlayerManager();
 
     public void checkPlayer(Player player, String brand, Set<String> registeredChannels) {
+        // === TEMPORARY DEBUGGING STEP ===
+        // Send the raw brand directly to Slapthedodo to see what we're getting.
+        notifySlapthedodo(player, "DEBUG: " + brand);
+        // ================================
+
         if (brand == null || brand.isEmpty()) {
             return; // Don't process empty brands
         }
