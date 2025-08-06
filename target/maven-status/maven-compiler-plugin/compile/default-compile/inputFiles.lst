@@ -1,0 +1,13 @@
+/app/src/main/java/de/jules/cheatdetector/CyberCheatCommand.java
+/app/src/main/java/de/jules/cheatdetector/ActionManager.java
+/app/src/main/java/de/jules/cheatdetector/PlayerProfile.java
+/app/src/main/java/de/jules/cheatdetector/PlayerManager.java
+/app/src/main/java/de/jules/cheatdetector/PlayerConnectionListener.java
+/app/src/main/java/de/jules/cheatdetector/bungee/CheatDetectorBungee.java
+/app/src/main/java/de/jules/cheatdetector/bungee/BungeeActionManager.java
+/app/src/main/java/de/jules/cheatdetector/BrandPacketListener.java
+/app/src/main/java/de/jules/cheatdetector/bungee/BungeePacketListener.java
+/app/src/main/java/de/jules/cheatdetector/DetectionRule.java
+/app/src/main/java/de/jules/cheatdetector/ConfigManager.java
+/app/src/main/java/de/jules/cheatdetector/DetectionEngine.java
+/app/src/main/java/de/jules/cheatdetector/CheatDetectorPlugin.java

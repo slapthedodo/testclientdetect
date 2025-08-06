@@ -9,6 +9,7 @@ public final class CheatDetectorPlugin extends JavaPlugin {
     private static CheatDetectorPlugin instance;
     private ConfigManager configManager;
     private ActionManager actionManager;
+    private PlayerManager playerManager;
 
     @Override
     public void onLoad() {
@@ -22,6 +23,7 @@ public final class CheatDetectorPlugin extends JavaPlugin {
     public void onEnable() {
         // Initialize managers and load the configuration
         configManager = new ConfigManager(getDataFolder(), getLogger(), getResource("config.toml"));
+        playerManager = new PlayerManager();
         actionManager = new ActionManager(this);
         configManager.loadConfig();
 
@@ -29,6 +31,12 @@ public final class CheatDetectorPlugin extends JavaPlugin {
 
         // Register packet listener
         PacketEvents.getAPI().getEventManager().registerListener(new BrandPacketListener());
+
+        // Register Bukkit listeners
+        getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
+
+        // Register command
+        getCommand("cybercheat").setExecutor(new CyberCheatCommand(playerManager));
     }
 
     @Override
@@ -42,6 +50,10 @@ public final class CheatDetectorPlugin extends JavaPlugin {
 
     public ActionManager getActionManager() {
         return actionManager;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
     }
 
     public static CheatDetectorPlugin getInstance() {

@@ -1,0 +1,4 @@
+name: CheatDetector
+version: 1.0.0
+author: Jules
+main: de.jules.cheatdetector.bungee.CheatDetectorBungee
