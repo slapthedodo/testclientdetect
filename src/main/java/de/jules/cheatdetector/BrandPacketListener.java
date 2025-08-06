@@ -10,7 +10,8 @@ import java.nio.charset.StandardCharsets;
 
 public class BrandPacketListener extends PacketListenerAbstract {
 
-    private final CheatDetectorPlugin plugin = CheatDetectorPlugin.getInstance();
+    private final PlayerManager playerManager = CheatDetectorPlugin.getInstance().getPlayerManager();
+    private final DetectionEngine detectionEngine = new DetectionEngine();
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
@@ -19,27 +20,46 @@ public class BrandPacketListener extends PacketListenerAbstract {
         }
 
         Player player = (Player) event.getPlayer();
-        if (player == null) {
-            return;
-        }
+        if (player == null) return;
+
+        PlayerProfile profile = playerManager.getProfile(player);
+        if (profile == null) return; // Should not happen if PlayerConnectionListener is working
 
         WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
         String channelName = packet.getChannelName();
-        byte[] data = packet.getData();
-        String message = new String(data, StandardCharsets.UTF_8);
 
-        for (DetectionRule rule : plugin.getConfigManager().getDetectionRules().values()) {
-            // Check if the channel matches one of the rule's channels
-            boolean channelMatch = rule.getChannels().stream()
-                    .anyMatch(ch -> ch.equalsIgnoreCase(channelName));
+        if (channelName.equalsIgnoreCase("minecraft:register")) {
+            for (String channel : new String(packet.getData(), StandardCharsets.UTF_8).split("\0")) {
+                profile.addChannel(channel);
+            }
+        } else if (channelName.equalsIgnoreCase("minecraft:brand")) {
+            // The brand is sent after registration, so we can now check.
+            String brand = readBrand(packet.getData());
+            detectionEngine.checkPlayer(player, brand, profile.getRegisteredChannels());
+        }
+    }
 
-            if (channelMatch) {
-                // Check if the message contains the specified string
-                if (message.toLowerCase().contains(rule.getMessageHas().toLowerCase())) {
-                    // Execute the configured actions for this rule
-                    plugin.getActionManager().executeActions(player, rule);
+    private String readBrand(byte[] data) {
+        // A simple utility to read a VarInt prefixed string.
+        // This is a simplified implementation. A proper one would be more robust.
+        try {
+            int i = 0;
+            int j = 0;
+            int k = 0;
+            while (true) {
+                int b = data[i++];
+                j |= (b & 0x7F) << k++ * 7;
+                if (k > 5) {
+                    throw new RuntimeException("VarInt too big");
+                }
+                if ((b & 0x80) != 128) {
+                    break;
                 }
             }
+            return new String(data, i, j, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            // Fallback for older clients or unexpected formats
+            return new String(data, StandardCharsets.UTF_8).trim();
         }
     }
 }

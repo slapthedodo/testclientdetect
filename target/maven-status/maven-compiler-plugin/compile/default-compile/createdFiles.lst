@@ -1,0 +1,10 @@
+de/jules/cheatdetector/CyberCheatCommand.class
+de/jules/cheatdetector/PlayerConnectionListener.class
+de/jules/cheatdetector/DetectionEngine.class
+de/jules/cheatdetector/BrandPacketListener.class
+de/jules/cheatdetector/ActionManager.class
+de/jules/cheatdetector/PlayerManager.class
+de/jules/cheatdetector/DetectionRule.class
+de/jules/cheatdetector/ConfigManager.class
+de/jules/cheatdetector/CheatDetectorPlugin.class
+de/jules/cheatdetector/PlayerProfile.class
