@@ -23,7 +23,9 @@ public class ActionManager {
                     case "kick":
                         performKick(player, rule);
                         break;
-                    // "ban" can be added here
+                    case "ban":
+                        performBan(player, rule);
+                        break;
                 }
             }
         });
@@ -50,4 +52,9 @@ public class ActionManager {
         player.kickPlayer(kickMessage);
     }
 
+    private void performBan(Player player, DetectionRule rule) {
+        String reason = "Unfair Advantage (Cheating)";
+        String command = "ban " + player.getName() + " " + reason;
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+    }
 }

@@ -1,7 +1,8 @@
 package de.jules.cheatdetector.bungee;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.factory.bungee.BungeePacketEventsBuilder;
+import de.jules.cheatdetector.ConfigManager;
+import io.github.retrooper.packetevents.bungee.factory.BungeePacketEventsBuilder;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public class CheatDetectorBungee extends Plugin {

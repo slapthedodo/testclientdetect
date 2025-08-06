@@ -42,10 +42,10 @@ public class ConfigManager {
         Toml toml = new Toml().read(configFile);
         detectionRules.clear();
 
-        for (String key : toml.entrySet()) {
+        for (Map.Entry<String, Object> entry : toml.entrySet()) {
+            String key = entry.getKey();
             if (toml.getTable(key) != null) {
-                Map<String, Object> clientData = toml.getTable(key).toMap();
-                DetectionRule rule = new DetectionRule(key, clientData);
+                DetectionRule rule = new DetectionRule(key, toml.getTable(key).toMap());
                 detectionRules.put(key, rule);
             }
         }

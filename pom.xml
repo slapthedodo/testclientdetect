@@ -11,7 +11,7 @@
     <name>CheatDetector</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -38,6 +38,16 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.github.retrooper.packetevents</pattern>
+                                    <shadedPattern>de.jules.cheatdetector.lib.packetevents</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.moandjiezana.toml</pattern>
+                                    <shadedPattern>de.jules.cheatdetector.lib.toml</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -64,6 +74,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -80,9 +94,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.retrooper.packetevents</groupId>
-            <artifactId>api</artifactId>
-            <version>2.2.1</version>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.9.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-bungeecord</artifactId>
+            <version>2.9.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
