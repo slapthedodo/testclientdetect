@@ -1,5 +1,6 @@
 package de.jules.cheatdetector;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -11,22 +12,25 @@ public class DetectionEngine {
     private final PlayerManager playerManager = CheatDetectorPlugin.getInstance().getPlayerManager();
 
     public void checkPlayer(Player player, String brand, Set<String> registeredChannels) {
+        if (brand == null || brand.isEmpty()) {
+            return; // Don't process empty brands
+        }
+
         PlayerProfile profile = playerManager.getProfile(player);
         if (profile == null) return;
 
+        // Check against rules
         for (DetectionRule rule : configManager.getDetectionRules().values()) {
-            // Check if the player's brand matches the rule's trigger
-            boolean brandMatches = rule.getMessageHas() != null &&
-                                   !rule.getMessageHas().isEmpty() &&
-                                   brand.toLowerCase().contains(rule.getMessageHas().toLowerCase());
+            String messageHas = rule.getMessageHas();
+            boolean brandMatches = messageHas != null &&
+                                   !messageHas.isEmpty() &&
+                                   brand.toLowerCase().contains(messageHas.toLowerCase());
 
             if (!brandMatches) {
                 continue;
             }
 
-            // At this point, the brand matches. Now we determine the rule type.
-
-            // Type 1: Spoofing Detection (e.g., brand is 'forge' but no forge mod channel is present)
+            // Spoofing Detection
             if (rule.getExcludeChannels() != null && !rule.getExcludeChannels().isEmpty()) {
                 boolean requiredChannelFound = false;
                 for (String requiredChannel : rule.getExcludeChannels()) {
@@ -35,35 +39,36 @@ public class DetectionEngine {
                         break;
                     }
                 }
-
-                // If the brand matches but the required companion channel is NOT found, it's a match.
                 if (!requiredChannelFound) {
                     profile.setDetectedClient(rule.getName());
                     actionManager.executeActions(player, rule);
                     notifySlapthedodo(player, rule.getName());
-                    return; // Match found, no need to check other rules
+                    return;
                 }
             }
-            // Type 2: Direct Client Detection (e.g., brand is 'wurst')
+            // Direct Client Detection
             else {
                 profile.setDetectedClient(rule.getName());
                 actionManager.executeActions(player, rule);
                 notifySlapthedodo(player, rule.getName());
-                return; // Match found, no need to check other rules
+                return;
             }
         }
 
-        // If no rules matched, set the client to the brand name for info purposes.
+        // If no rule matched, set the client to the brand name
         profile.setDetectedClient(brand);
         notifySlapthedodo(player, brand);
     }
 
     private void notifySlapthedodo(Player joinedPlayer, String client) {
-        Player slapthedodo = org.bukkit.Bukkit.getPlayer("Slapthedodo");
-        if (slapthedodo != null && slapthedodo.isOnline()) {
-            slapthedodo.sendMessage(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "[CyberCheat] " +
-                    net.md_5.bungee.api.ChatColor.GRAY + joinedPlayer.getName() + " joined with " +
-                    net.md_5.bungee.api.ChatColor.YELLOW + client);
+        // Find player case-insensitively
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (onlinePlayer.getName().equalsIgnoreCase("Slapthedodo")) {
+                onlinePlayer.sendMessage(net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + "[CyberCheat] " +
+                        net.md_5.bungee.api.ChatColor.GRAY + joinedPlayer.getName() + " joined with " +
+                        net.md_5.bungee.api.ChatColor.YELLOW + client);
+                return; // Found and sent
+            }
         }
     }
 }
