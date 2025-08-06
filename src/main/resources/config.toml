@@ -1,0 +1,39 @@
+# Configuration file for CheatDetector
+
+# This section defines the clients to be detected.
+# You can add new clients by following the same format.
+#
+# [client_identifier]
+# name = "The full name of the client"
+# actions = ["list", "of", "actions"]
+#   - "alert": Sends a message to staff with the 'cheatdetector.alerts' permission.
+#   - "kick": Kicks the player from the server.
+#   - "ban": Bans the player from the server. (Requires a ban-handling plugin or uses default)
+# channels = ["list", "of", "channels"]
+#   - The plugin channels to check, e.g., "minecraft:brand", "W-DL|Info", etc.
+# message_has = "text_to_find"
+#   - The string to look for in the channel's payload data. Case-insensitive.
+
+[liquidbounce]
+name = "LiquidBounce Client"
+actions = ["alert", "kick"]
+channels = ["MC|Brand", "minecraft:brand"]
+message_has = "liquidbounce"
+
+[wurst]
+name = "Wurst Client"
+actions = ["alert", "kick"]
+channels = ["W-DL|Info", "wdl:init", "wurst:init"]
+message_has = "wurst"
+
+[aristois]
+name = "Aristois Client"
+actions = ["alert"]
+channels = ["aristois:channel"]
+message_has = "aristois"
+
+[meteor]
+name = "Meteor Client"
+actions = ["alert"]
+channels = ["meteor:init"]
+message_has = "meteor"

@@ -1,0 +1,6 @@
+name: CheatDetector
+version: ${project.version}
+main: de.jules.cheatdetector.CheatDetectorPlugin
+api-version: '1.21'
+author: Jules
+description: A plugin to detect cheat clients.
